@@ -1,0 +1,12 @@
+from behave import given, then
+from pages.home_page import HomePage
+
+@given('I navigate to the Automation Exercise home page')
+def step_impl(context):
+    context.home_page = HomePage(context.driver)
+    context.home_page.open()
+
+@then('the page title should contain "{keyword}"')
+def step_impl(context, keyword):
+    title = context.home_page.get_title()
+    assert keyword in title, f"Expected '{keyword}' in title, but got '{title}'"
