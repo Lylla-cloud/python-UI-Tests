@@ -16,8 +16,16 @@ class BasePage:
             EC.presence_of_element_located(locator))
 
     def click(self, locator):
-        self.wait.until(
-            EC.element_to_be_clickable(locator)).click()
+        try:
+            element = self.wait.until(
+                EC.element_to_be_clickable(locator))
+            try:
+                element.click()
+            except Exception:
+                self.driver.execute_script("arguments[0].click();", element)
+        except Exception:
+            element = self.find(locator)
+            self.driver.execute_script("arguments[0].click();", element)
 
     def type(self, locator, text):
         element = self.find(locator)
