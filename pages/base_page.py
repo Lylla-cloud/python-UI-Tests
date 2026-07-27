@@ -1,15 +1,48 @@
-import base64
 from typing import List, Optional
-from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from utils.config_reader import ConfigReader
+
 
 class BasePage:
-    def __init__(self, driver: WebDriver, timeout_seconds: int = 10):
+    def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(driver, timeout_seconds)
+        self.wait = WebDriverWait(
+            driver, timeout=ConfigReader.get("timeout", 20))
+
+    def find(self, locator):
+        return self.wait.until(
+            EC.presence_of_element_located(locator))
+
+    def click(self, locator):
+        self.wait.until(
+            EC.element_to_be_clickable(locator)).click()
+
+    def type(self, locator, text):
+        element = self.find(locator)
+        element.clear()
+        element.send_keys(text)
+
+    def get_text(self, locator):
+        return self.find(locator).text
+
+    def is_displayed(self, locator):
+        try:
+            return self.find(locator).is_displayed()
+        except Exception:
+            return False
+
+    def find_all(self, locator):
+        return self.wait.until(
+            EC.presence_of_all_elements_located(locator))
+
+    def scroll_to(self, locator):
+        element = self.find(locator)
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView(true);", element)
+
+    # --- Backward compatibility methods ---
 
     def navigate_to(self, url: str) -> None:
         self.driver.get(url)
@@ -20,35 +53,15 @@ class BasePage:
     def get_title(self) -> str:
         return self.driver.title
 
-    def wait_for_element_visible(self, locator: tuple) -> WebElement:
-        return self.wait.until(EC.visibility_of_element_located(locator))
-
-    def wait_for_element_clickable(self, locator: tuple) -> WebElement:
-        return self.wait.until(EC.element_to_be_clickable(locator))
-
-    def click(self, locator: tuple) -> None:
-        element = self.wait_for_element_clickable(locator)
-        self.highlight_element(element)
-        element.click()
-
-    def type(self, locator: tuple, text: str) -> None:
-        element = self.wait_for_element_visible(locator)
-        self.highlight_element(element)
-        element.clear()
-        element.send_keys(text)
-
-    def get_text(self, locator: tuple) -> str:
-        return self.wait_for_element_visible(locator).text
-
-    def is_element_present(self, locator: tuple) -> bool:
-        return len(self.driver.find_elements(*locator)) > 0
-
     def execute_script(self, script: str, *args):
         return self.driver.execute_script(script, *args)
 
-    def highlight_element(self, element: WebElement) -> None:
+    def highlight_element(self, element) -> None:
         try:
-            self.execute_script("arguments[0].style.border='3px solid red'; arguments[0].style.backgroundColor='yellow';", element)
+            self.execute_script(
+                "arguments[0].style.border='3px solid red'; arguments[0].style.backgroundColor='yellow';",
+                element
+            )
         except Exception:
             pass
 

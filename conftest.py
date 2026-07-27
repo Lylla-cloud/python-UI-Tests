@@ -1,28 +1,41 @@
 import pytest
-from core.driver_factory import DriverFactory
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from utils.driver_manager import get_driver
+from utils.config_reader import ConfigReader
 
 def pytest_addoption(parser):
-    parser.addoption("--target-url", action="store", default="https://example.com", help="Target URL for testing")
-    parser.addoption("--browser", action="store", default="chrome", help="Browser: chrome or firefox")
-    parser.addoption("--headless", action="store_true", default=True, help="Run browser in headless mode")
-    parser.addoption("--timeout", action="store", default=10, type=int, help="Implicit wait timeout in seconds")
+    parser.addoption("--browser", action="store",
+                     default=None,
+                     help="Browser: chrome or firefox")
 
 @pytest.fixture(scope="session")
-def target_url(request):
-    url = request.config.getoption("--target-url")
-    if not url.startswith("http://") and not url.startswith("https://"):
-        url = "https://" + url
-    return url
+def config():
+    return ConfigReader.get_config()
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
+def target_url():
+    return ConfigReader.get("base_url")
+
+@pytest.fixture
 def driver(request):
-    browser = request.config.getoption("--browser")
-    headless = request.config.getoption("--headless")
-    timeout = request.config.getoption("--timeout")
-    
-    driver_instance = DriverFactory.create_driver(browser=browser, headless=headless, timeout_seconds=timeout)
-    yield driver_instance
-    try:
-        driver_instance.quit()
-    except Exception:
-        pass
+    d = get_driver()
+    yield d
+    d.quit()
+
+@pytest.fixture
+def home_page(driver):
+    from pages.home_page import HomePage
+    page = HomePage(driver)
+    page.open()
+    return page
+
+@pytest.fixture
+def login_page(home_page):
+    return home_page.go_to_signup_login()
+
+@pytest.fixture
+def products_page(home_page):
+    return home_page.go_to_products()

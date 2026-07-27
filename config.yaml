@@ -1,0 +1,11 @@
+base_url: "https://automationexercise.com"
+api_base_url: "https://automationexercise.com/api"
+timeout: 20
+browser: chrome
+headless: true
+environment: local
+
+test_user:
+  email: "lynne.capstone@example.com"
+  password: "Test@1234"
+  name: "Lynne Capstone"
