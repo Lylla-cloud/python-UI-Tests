@@ -1,52 +1,84 @@
-# Reno — Python Selenium Website Testing Framework
+# AutomationExercise Python QA Framework
 
-A modular, high-performance website automation and quality testing application built with **Python 3**, **Selenium WebDriver**, **Pytest**, and **Flask**.
+![Python Capstone](https://github.com/Lylla-cloud/python-UI-Tests/actions/workflows/python_capstone.yml/badge.svg)
 
----
+A production-grade Python test automation framework for [AutomationExercise.com](https://automationexercise.com) — a full e-commerce platform. Built as a capstone project demonstrating senior QA engineering skills across UI automation, API testing, and BDD.
 
-## Features
+## What This Tests
 
-- **Page Object Model (POM)**: Clean abstraction layer (`pages/base_page.py`, `pages/generic_page.py`).
-- **Multi-Browser Driver Manager**: Supports Google Chrome and Mozilla Firefox with Headless and Headed modes via `webdriver-manager`.
-- **Automated Quality Suites**:
-  - ⚡ **Smoke & Availability**: Checks reachability, page titles, HTML meta tags, and screenshots.
-  - 🔗 **Link Crawler**: Scrapes links, checks broken HTTP status codes (404/500), and records response times.
-  - 📝 **Form Field Audit**: Inspects forms, text inputs, and interactivity.
-  - 📊 **Performance & Accessibility**: Validates heading tags (`h1`/`h2`), image `alt` text, and page load render speed.
-- **Dual Execution Interfaces**:
-  - **CLI Runner**: `python runner.py` with custom arguments (`--url`, `--browser`, `--headless`).
-  - **Web Dashboard**: Interactive Flask app (`python app.py`) with real-time logs, progress tracking, and screenshot modal previews.
+| Layer | Coverage |
+|---|---|
+| UI (Selenium) | Login, logout, product search, browsing |
+| API (Requests) | Products list, brands, search, user login verification |
+| BDD (Behave) | Business-readable scenarios for all critical journeys |
 
----
+## Tech Stack
 
-## Quick Start
+- **Python 3.12** + **pip**
+- **Selenium WebDriver 4** + **WebDriverManager** — browser automation
+- **Requests** — API testing
+- **Behave** — BDD test framework
+- **Pytest** — Test runner and assertion framework
+- **GitHub Actions** — CI/CD pipeline (API → UI → BDD)
+- **Page Object Model** — maintainable UI framework
 
-### 1. Install Dependencies
+## Project Structure
 
-```bash
-pip install -r requirements.txt
+```text
+.
+├── .github/
+│   └── workflows/
+│       └── python_capstone.yml   # CI/CD configuration
+├── features/                     # BDD Behave features and steps
+│   └── steps/
+├── pages/                        # Page Object Model components
+│   ├── base_page.py
+│   ├── home_page.py
+│   ├── login_signup_page.py
+│   └── products_page.py
+├── test_data/                    # Static test data
+├── tests/                        # UI and API test cases
+│   ├── test_login.py
+│   ├── test_products.py
+│   ├── test_products_api.py
+│   └── test_smoke.py
+├── utils/                        # Shared utility modules
+│   ├── config_reader.py
+│   └── driver_manager.py
+├── config.yaml                   # Environment and credential config
+└── requirements.txt              # Project dependencies
 ```
 
-### 2. Run via CLI
+## Getting Started
 
-Run test suite against any website:
+### Prerequisites
 
-```bash
-python runner.py --url https://example.com --browser chrome --headless
-```
+- Python 3.12 or newer installed.
 
-To run using pytest directly:
+### Installation
 
-```bash
-pytest --target-url=https://example.com --browser=chrome --headless
-```
+1. Clone the repository.
+2. Create and activate a virtual environment:
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   ```
+3. Install the dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### 3. Launch Web Dashboard UI
+### Running Tests
 
-Start the Flask server:
-
-```bash
-python app.py
-```
-
-Then open your browser and visit **`http://localhost:5000`**.
+- Run all Pytest tests:
+  ```bash
+  pytest -v
+  ```
+- Run a specific test suite (e.g., API tests):
+  ```bash
+  pytest tests/test_products_api.py -v
+  ```
+- Run Behave BDD tests:
+  ```bash
+  behave
+  ```
